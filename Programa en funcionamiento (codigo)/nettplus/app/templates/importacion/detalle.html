@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block titulo %}Detalle de carga{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>{{ c.nombre_archivo }}</h1>
+        <p>Cargado el {{ c.fecha_hora|fechahora }} por {{ c.usuario or '—' }} ·
+           Formato: {{ 'una hoja por colaborador' if c.formato_archivo == 'HOJA_POR_COLABORADOR' else 'una sola hoja' }}</p>
+    </div>
+    <div class="acciones">
+        <span class="estado {{ {'EXITOSA':'bien','CON OBSERVACIONES':'alerta','FALLIDA':'mal'}.get(c.resultado, 'info') }}" style="font-size:14px;padding:6px 14px">{{ c.resultado|capitalize }}</span>
+    </div>
+</div>
+
+<section class="resultado" aria-label="Resultado de la carga">
+    <div><span>Filas leídas</span><strong>{{ c.registros_leidos }}</strong></div>
+    <div><span>Marcaciones guardadas</span><strong style="color:var(--verde-oscuro)">{{ c.registros_cargados }}</strong></div>
+    <div><span>Filas con error</span><strong style="color:var(--rojo)">{{ c.registros_con_error }}</strong></div>
+    <div><span>Días inconsistentes</span><strong style="color:#7A6A00">{{ incidencias|selectattr('tipo_incidencia', 'equalto', 'INCONSISTENTE')|list|length }}</strong></div>
+</section>
+
+<section class="panel">
+    <h2>Incidencias</h2>
+    <p class="nota">Las filas duplicadas o incompletas no se guardaron. Los días inconsistentes sí se guardaron, pero deben revisarse.</p>
+    {% if incidencias %}
+    <div class="tabla-envoltura">
+    <table>
+        <thead><tr><th>Tipo</th><th class="num">Fila</th><th>Descripción</th></tr></thead>
+        <tbody>
+        {% for i in incidencias %}
+            <tr>
+                <td><span class="estado {{ {'DUPLICADO':'info','INCOMPLETO':'mal','INCONSISTENTE':'alerta'}[i.tipo_incidencia] }}">{{ i.tipo_incidencia|capitalize }}</span></td>
+                <td class="num">{{ i.numero_fila or '—' }}</td>
+                <td>{{ i.descripcion }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <div class="vacio"><strong>Sin incidencias</strong>Todas las filas del archivo se guardaron correctamente.</div>
+    {% endif %}
+</section>
+<div class="botones">
+    <a class="boton secundario" href="{{ url_for('importacion.registro') }}">Volver al registro</a>
+    <a class="boton secundario" href="{{ url_for('marcaciones.historial') }}">Ver marcaciones</a>
+</div>
+{% endblock %}

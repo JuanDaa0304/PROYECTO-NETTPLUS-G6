@@ -1,0 +1,61 @@
+{% from "partials/iconos.html" import icono %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block titulo %}NettPlus{% endblock %} · Asistencia NettPlus</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/isotipo.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nettplus.css') }}">
+</head>
+<body>
+<div class="app" id="app">
+
+    <aside class="lateral" aria-label="Menú principal">
+        <div class="lateral-marca">
+            <img src="{{ url_for('static', filename='img/logo_nettplus_negativo.png') }}" alt="Nettplus">
+            <small>Gestión y análisis de asistencia</small>
+        </div>
+        <nav class="menu">
+            {% for seccion, items in menu %}
+                <div class="menu-seccion">{{ seccion }}</div>
+                {% for item in items %}
+                    {% set activo = request.endpoint == item.endpoint and (not item.sprint or ('/' ~ ((request.view_args or {}).get('modulo') or '#')) in item.url) %}
+                    <a href="{{ item.url }}" class="{{ 'activo' if activo }}" {% if activo %}aria-current="page"{% endif %}>
+                        {{ icono(item.icono) }} <span>{{ item.texto }}</span>
+                        {% if item.sprint %}<span class="pendiente">{{ item.sprint }}</span>{% endif %}
+                    </a>
+                {% endfor %}
+            {% endfor %}
+        </nav>
+        <div class="lateral-pie">NetPlus · Grupo 6 · Sprint 2</div>
+    </aside>
+
+    <div class="principal">
+        <header class="superior">
+            <button class="boton-menu" type="button" aria-label="Abrir menú" onclick="document.getElementById('app').classList.toggle('menu-abierto')">{{ icono('menu') }}</button>
+            <div class="corte" title="Periodo de corte de NetPlus: del 21 al 20">
+                <div class="corte-texto">Corte <strong>{{ periodo_actual }}</strong> · día {{ corte_dia }} de {{ corte_total }}</div>
+                <div class="corte-barra" aria-hidden="true"><span style="width: {{ corte_pct }}%"></span></div>
+            </div>
+            <div class="usuario">
+                <div class="usuario-datos">
+                    <strong>{{ session.nombre }}</strong>
+                    <small>{{ session.rol }}</small>
+                </div>
+                <div class="avatar" aria-hidden="true">{{ session.nombre[:1] }}</div>
+                <a class="boton secundario" href="{{ url_for('auth.logout') }}">{{ icono('salir') }} Cerrar sesión</a>
+            </div>
+        </header>
+
+        <main class="contenido">
+            {% include "partials/mensajes.html" %}
+            {% block contenido %}{% endblock %}
+        </main>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/nettplus.js') }}"></script>
+</body>
+</html>

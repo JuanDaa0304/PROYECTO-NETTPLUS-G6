@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% from "partials/iconos.html" import icono %}
+{% block titulo %}Personal{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Personal</h1>
+        <p>Colaboradores registrados a partir de los reportes de Z-BioTime, identificados por su código.</p>
+    </div>
+</div>
+
+<form class="panel filtros" method="GET">
+    <div>
+        <label for="q">Código o nombre</label>
+        <input id="q" name="q" value="{{ q }}" placeholder="Ej.: 4 o Prueba">
+    </div>
+    <div>
+        <label for="departamento">Departamento</label>
+        <select id="departamento" name="departamento">
+            <option value="">Todos</option>
+            {% for dpt in departamentos %}<option value="{{ dpt.id_departamento }}" {{ 'selected' if depto == dpt.id_departamento }}>{{ dpt.nombre }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="botones">
+        <button class="boton azul" type="submit">{{ icono('buscar') }} Buscar</button>
+        <a class="boton secundario" href="{{ url_for('personal.lista') }}">Limpiar</a>
+    </div>
+</form>
+
+{% if colaboradores %}
+<div class="tabla-envoltura">
+<table>
+    <thead><tr><th>Código</th><th>Nombres</th><th>Departamento</th><th>Estado</th><th class="num">Marcaciones</th><th>Última marcación</th><th></th></tr></thead>
+    <tbody>
+    {% for c in colaboradores %}
+        <tr>
+            <td class="codigo">{{ c.id_colaborador }}</td>
+            <td>{{ c.nombres }}</td>
+            <td>{{ c.departamento or '—' }}</td>
+            <td><span class="estado {{ 'bien' if c.estado_laboral == 'ACTIVO' else 'mal' }}">{{ c.estado_laboral|capitalize }}</span></td>
+            <td class="num">{{ c.marcaciones }}</td>
+            <td>{{ c.ultima_fecha|fecha }}</td>
+            <td><a href="{{ url_for('marcaciones.historial', q=c.id_colaborador) }}">Ver historial</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<p class="nota" style="margin-top:10px">{{ colaboradores|length }} colaborador(es)</p>
+{% else %}
+<div class="tabla-envoltura"><div class="vacio"><strong>No hay colaboradores que coincidan</strong>{% if q or depto %}Prueba con otro código o quita el filtro de departamento.{% else %}Se registran automáticamente al cargar el primer reporte de marcaciones.{% endif %}</div></div>
+{% endif %}
+{% endblock %}

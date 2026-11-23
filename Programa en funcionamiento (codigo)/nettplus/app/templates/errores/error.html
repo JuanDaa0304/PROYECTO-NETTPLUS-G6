@@ -1,0 +1,9 @@
+{% extends "base.html" if session.id_rol else "errores/_simple.html" %}
+{% block titulo %}Error {{ codigo }}{% endblock %}
+{% block contenido %}
+<section class="panel aviso-grande">
+    <span class="estado mal">Error {{ codigo }}</span>
+    <h1>{{ mensaje }}</h1>
+    <a class="boton secundario" href="{{ url_for('panel.inicio') }}">Ir al inicio</a>
+</section>
+{% endblock %}

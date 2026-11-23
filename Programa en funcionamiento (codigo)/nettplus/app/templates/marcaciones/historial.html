@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% from "partials/iconos.html" import icono %}
+{% block titulo %}Marcaciones{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>{% if colaborador %}Marcaciones de {{ colaborador.nombres }}{% else %}Marcaciones{% endif %}</h1>
+        <p>{% if colaborador %}Código {{ colaborador.id_colaborador }} · {{ colaborador.departamento or 'Sin departamento' }}{% else %}Historial de asistencia por rango de fechas, periodo de corte, departamento o colaborador.{% endif %}</p>
+    </div>
+</div>
+
+{% if error %}<div class="mensaje error" role="alert">{{ error }}</div>{% endif %}
+
+<form class="panel filtros" method="GET">
+    <div>
+        <label for="periodo">Periodo de corte</label>
+        <select id="periodo" name="periodo">
+            <option value="">Elegir fechas a mano</option>
+            {% for clave, texto, ini, fin in periodos %}<option value="{{ clave }}" {{ 'selected' if periodo == clave }}>{{ texto }}</option>{% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="desde">Desde</label>
+        <input type="date" id="desde" name="desde" value="{{ desde if not periodo }}">
+    </div>
+    <div>
+        <label for="hasta">Hasta</label>
+        <input type="date" id="hasta" name="hasta" value="{{ hasta if not periodo }}">
+    </div>
+    <div>
+        <label for="departamento">Departamento</label>
+        <select id="departamento" name="departamento">
+            <option value="">Todos</option>
+            {% for dpt in departamentos %}<option value="{{ dpt.id_departamento }}" {{ 'selected' if depto == dpt.id_departamento }}>{{ dpt.nombre }}</option>{% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="q">Colaborador</label>
+        <input id="q" name="q" value="{{ q }}" placeholder="Código o nombre">
+    </div>
+    <div class="botones">
+        <button class="boton azul" type="submit">{{ icono('buscar') }} Filtrar</button>
+        <a class="boton secundario" href="{{ url_for('marcaciones.historial') }}">Limpiar</a>
+    </div>
+</form>
+
+{% if filas %}
+<div class="tabla-envoltura">
+<table>
+    <thead><tr><th>Fecha</th><th>Hora</th><th>Marcación</th><th>Código</th><th>Colaborador</th><th>Departamento</th><th>Forma</th><th>Fuente</th></tr></thead>
+    <tbody>
+    {% for r in filas %}
+        <tr>
+            <td>{{ r.fecha|fecha }}</td>
+            <td class="num" style="text-align:left">{{ r.hora_marcacion }}</td>
+            <td><span class="estado {{ 'bien' if r.tipo_marcacion == 'Entrada' else 'info' }}">{{ r.tipo_marcacion }}</span></td>
+            <td class="codigo">{{ r.id_colaborador }}</td>
+            <td>{{ r.nombres }}</td>
+            <td>{{ r.departamento or '—' }}</td>
+            <td>{{ r.forma_marcacion or '—' }}</td>
+            <td>{{ r.fuente or '—' }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<div class="paginacion">
+    <span>Mostrando {{ (pagina - 1) * config.POR_PAGINA + 1 }}–{{ [pagina * config.POR_PAGINA, total]|min }} de {{ total }} marcaciones</span>
+    <span class="botones">
+        {% set base = request.args.to_dict() %}
+        {% if pagina > 1 %}{% set _ = base.update({'pagina': pagina - 1}) %}<a class="boton secundario" href="{{ url_for('marcaciones.historial', **base) }}">Anterior</a>{% endif %}
+        {% if pagina < paginas %}{% set _ = base.update({'pagina': pagina + 1}) %}<a class="boton secundario" href="{{ url_for('marcaciones.historial', **base) }}">Siguiente</a>{% endif %}
+    </span>
+</div>
+{% else %}
+<div class="tabla-envoltura"><div class="vacio"><strong>No hay marcaciones con esos filtros</strong>Amplía el rango de fechas o elige otro periodo de corte.</div></div>
+{% endif %}
+{% endblock %}

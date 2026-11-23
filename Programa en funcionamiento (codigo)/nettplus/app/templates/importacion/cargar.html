@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "partials/iconos.html" import icono %}
+{% block titulo %}Carga de marcaciones{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Carga de marcaciones</h1>
+        <p>Sube el «Reporte de Marcaciones» exportado desde Z-BioTime. Se aceptan los dos formatos: una hoja por colaborador o todos en una sola hoja.</p>
+    </div>
+</div>
+
+<div class="rejilla-2">
+    <section class="panel">
+        <form method="POST" enctype="multipart/form-data" id="form-carga">
+            <div class="zona-carga" id="zona-carga">
+                {{ icono('excel') }}
+                <h2>Elige el archivo de Excel</h2>
+                <p>Formatos .xlsx o .xls, hasta 10 MB. También puedes arrastrarlo aquí.</p>
+                <input type="file" name="archivo" id="archivo" accept=".xlsx,.xls" required>
+                <div class="archivo-elegido" id="archivo-elegido" aria-live="polite"></div>
+                <button class="boton" type="submit">{{ icono('carga') }} Cargar y validar</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>Qué revisa el sistema</h2>
+        <p class="nota">Cada fila pasa por estos controles antes de guardarse.</p>
+        <ol class="lista-pasos">
+            <li><strong>Formato.</strong> Busca las columnas Id del Empleado, Fecha, Hora y Tipo de Marcación.</li>
+            <li><strong>Campos obligatorios.</strong> Si falta uno, la fila queda como incompleta y no se guarda.</li>
+            <li><strong>Duplicados.</strong> No se vuelve a guardar una marcación con el mismo código, fecha y hora.</li>
+            <li><strong>Colaboradores.</strong> Se crean o actualizan con su código, nombre y departamento.</li>
+            <li><strong>Inconsistencias.</strong> Marca los días con entrada sin salida o marcaciones repetidas.</li>
+        </ol>
+    </section>
+</div>
+
+<section class="panel">
+    <h2>Últimas cargas</h2>
+    <p class="nota">El historial completo está en <a href="{{ url_for('importacion.registro') }}">Registro de cargas</a>.</p>
+    {% include "importacion/_tabla_cargas.html" with context %}
+</section>
+{% endblock %}

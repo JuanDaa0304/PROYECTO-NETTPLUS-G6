@@ -1,0 +1,24 @@
+{% set filas = cargas if cargas is defined else recientes %}
+{% if filas %}
+<div class="tabla-envoltura">
+<table>
+    <thead><tr><th>Fecha y hora</th><th>Archivo</th><th>Usuario</th><th class="num">Leídas</th><th class="num">Guardadas</th><th class="num">Incidencias</th><th>Resultado</th><th></th></tr></thead>
+    <tbody>
+    {% for c in filas %}
+        <tr>
+            <td>{{ c.fecha_hora|fechahora }}</td>
+            <td>{{ c.nombre_archivo }}</td>
+            <td>{{ c.usuario or '—' }}</td>
+            <td class="num">{{ c.registros_leidos }}</td>
+            <td class="num">{{ c.registros_cargados }}</td>
+            <td class="num">{{ c.incidencias }}</td>
+            <td><span class="estado {{ {'EXITOSA':'bien','CON OBSERVACIONES':'alerta','FALLIDA':'mal'}.get(c.resultado, 'info') }}">{{ c.resultado|capitalize }}</span></td>
+            <td><a href="{{ url_for('importacion.detalle', id_importacion=c.id_importacion) }}">Ver detalle</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="vacio"><strong>Todavía no hay cargas</strong>La primera carga aparecerá aquí con su resultado.</div>
+{% endif %}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ingresar · Asistencia NettPlus</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/isotipo.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nettplus.css') }}">
+</head>
+<body>
+<main class="acceso">
+    <section class="acceso-marca">
+        <svg class="fibras" viewBox="0 0 600 800" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M-20 620 C 180 560, 260 700, 620 520" stroke="#73B542" stroke-opacity=".35" stroke-width="2" fill="none"/>
+            <path d="M-20 660 C 200 600, 300 740, 620 570" stroke="#FDEA18" stroke-opacity=".45" stroke-width="2" fill="none"/>
+            <path d="M-20 700 C 220 640, 330 780, 620 620" stroke="#ffffff" stroke-opacity=".18" stroke-width="2" fill="none"/>
+            <path d="M-20 740 C 240 690, 360 800, 620 680" stroke="#73B542" stroke-opacity=".2" stroke-width="2" fill="none"/>
+        </svg>
+        <img src="{{ url_for('static', filename='img/logo_nettplus_negativo.png') }}" alt="Nettplus. The power of fiber">
+        <div>
+            <h2>Asistencia del personal, al día y sin digitar.</h2>
+            <p>Carga los reportes de Z-BioTime, revisa marcaciones y prepara el parte diario y el cierre de cada periodo.</p>
+        </div>
+        <small>Sistema de gestión y análisis de asistencia · NetPlus</small>
+    </section>
+
+    <section class="acceso-form">
+        <div class="acceso-caja">
+            <h1>Ingresar</h1>
+            <p>Usa la cuenta que te asignó Desarrollo Organizacional.</p>
+            {% include "partials/mensajes.html" %}
+            <form method="POST">
+                <div class="campo">
+                    <label for="usuario">Usuario</label>
+                    <input id="usuario" name="usuario" autocomplete="username" required autofocus>
+                </div>
+                <div class="campo">
+                    <label for="password">Contraseña</label>
+                    <input id="password" name="password" type="password" autocomplete="current-password" required>
+                </div>
+                <button class="boton azul" type="submit">Ingresar</button>
+            </form>
+            <div class="acceso-ayuda">
+                Cuentas de prueba: <code>admin / admin123</code> (Asistente de RR.HH.),
+                <code>jefe / jefe123</code>, <code>contabilidad / conta123</code>, <code>desarrollo / desarrollo123</code>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

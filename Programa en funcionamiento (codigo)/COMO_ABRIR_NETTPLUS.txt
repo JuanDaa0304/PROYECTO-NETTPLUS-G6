@@ -1,0 +1,42 @@
+CÓMO ABRIR LA PÁGINA NETTPLUS
+=============================
+
+PRIMERA VEZ (solo una vez por computadora)
+------------------------------------------
+1. Abrir cmd dentro de la carpeta "nettplus"
+   (en el explorador, escribir cmd en la barra de dirección y Enter)
+2. python -m venv .venv
+3. .venv\Scripts\activate
+4. pip install -r requirements.txt
+
+
+CADA VEZ QUE QUIERA ABRIRLA
+---------------------------
+1. Abrir cmd dentro de la carpeta "nettplus"
+2. .venv\Scripts\activate
+3. python run.py
+4. Abrir el navegador en:  http://127.0.0.1:5000
+5. Usuario: admin      Contraseña: admin123
+
+* No cerrar la ventana negra mientras use la página.
+* El aviso rojo "WARNING: This is a development server" es normal.
+
+
+PARA CERRARLA
+-------------
+En la ventana negra presionar:  Ctrl + C
+(o cerrar la ventana con la X)
+
+Los datos cargados quedan guardados en data\nettplus.db
+
+
+OTROS USUARIOS DE PRUEBA
+------------------------
+jefe / jefe123                  (Jefe de área)
+contabilidad / conta123         (Contabilidad)
+desarrollo / desarrollo123      (Desarrollo organizacional)
+
+
+ARCHIVO DE PRUEBA PARA SUBIR
+----------------------------
+data\ejemplos\marcaciones_demo_hoja_unica.xlsx

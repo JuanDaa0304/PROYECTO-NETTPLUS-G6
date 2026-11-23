@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block titulo %}Registro de cargas{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Registro de cargas</h1>
+        <p>Cada archivo importado queda registrado con su fecha, usuario y resultado, tenga éxito o no.</p>
+    </div>
+    {% if session.id_rol == 1 %}<div class="acciones"><a class="boton" href="{{ url_for('importacion.cargar') }}">Nueva carga</a></div>{% endif %}
+</div>
+{% include "importacion/_tabla_cargas.html" with context %}
+{% endblock %}

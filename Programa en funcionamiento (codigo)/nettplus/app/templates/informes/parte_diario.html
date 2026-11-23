@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "partials/iconos.html" import icono %}
+{% block titulo %}Parte diario{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Parte diario del {{ fecha|fecha }}</h1>
+        <p>Quién asistió, quién llegó tarde y quién no marcó. Hora de entrada de referencia: {{ config.HORA_ENTRADA_DEFECTO }} con {{ config.TOLERANCIA_MINUTOS }} min de tolerancia (los horarios por turno llegan en el Sprint 3).</p>
+    </div>
+</div>
+
+<form class="panel filtros" method="GET">
+    <div>
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" name="fecha" value="{{ fecha }}">
+    </div>
+    <div>
+        <label for="departamento">Departamento</label>
+        <select id="departamento" name="departamento">
+            <option value="">Todos</option>
+            {% for dpt in departamentos %}<option value="{{ dpt.id_departamento }}" {{ 'selected' if depto == dpt.id_departamento }}>{{ dpt.nombre }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="botones"><button class="boton azul" type="submit">Ver parte</button></div>
+</form>
+
+<section class="resultado" aria-label="Resumen del día">
+    <div><span>Asistieron</span><strong style="color:var(--verde-oscuro)">{{ resumen.presentes }}</strong></div>
+    <div><span>Con atraso</span><strong style="color:#7A6A00">{{ resumen.atrasos }}</strong></div>
+    <div><span>Sin marcación</span><strong style="color:var(--rojo)">{{ resumen.ausentes }}</strong></div>
+    <div><span>Por revisar</span><strong style="color:var(--azul)">{{ resumen.observados }}</strong></div>
+</section>
+
+{% if detalle %}
+<div class="tabla-envoltura">
+<table>
+    <thead><tr><th>Código</th><th>Colaborador</th><th>Departamento</th><th>Entrada</th><th>Salida</th><th class="num">Marcaciones</th><th class="num">Atraso</th><th>Estado</th></tr></thead>
+    <tbody>
+    {% for f in detalle %}
+        <tr>
+            <td class="codigo">{{ f.id_colaborador }}</td>
+            <td><a href="{{ url_for('marcaciones.historial', q=f.id_colaborador, desde=fecha, hasta=fecha) }}">{{ f.nombres }}</a></td>
+            <td>{{ f.departamento or '—' }}</td>
+            <td>{{ f.primera_entrada or '—' }}</td>
+            <td>{{ f.ultima_salida or '—' }}</td>
+            <td class="num">{{ f.marcaciones }}</td>
+            <td class="num">{{ (f.atraso ~ ' min') if f.atraso else '—' }}</td>
+            <td><span class="estado {{ {'A tiempo':'bien','Atraso':'alerta','Sin marcación':'mal','Revisar':'info'}[f.estado] }}">{{ f.estado }}</span></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="tabla-envoltura"><div class="vacio"><strong>No hay colaboradores registrados</strong>Carga un reporte de marcaciones para generar el parte diario.</div></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "partials/iconos.html" import icono %}
+{% block titulo %}Inicio{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Hola, {{ session.nombre.split(' ')[0] }}</h1>
+        <p>{% if d.ultima_fecha %}Último día con marcaciones: <strong>{{ d.ultima_fecha|fecha }}</strong>.{% else %}Aún no hay marcaciones cargadas. Empieza subiendo el reporte de Z-BioTime.{% endif %}</p>
+    </div>
+    {% if session.id_rol == 1 %}
+    <div class="acciones"><a class="boton" href="{{ url_for('importacion.cargar') }}">{{ icono('carga') }} Cargar marcaciones</a></div>
+    {% endif %}
+</div>
+
+<section class="cifras" aria-label="Resumen general">
+    <div class="cifra"><span>Colaboradores activos</span><strong>{{ d.colaboradores }}</strong><small>identificados por código</small></div>
+    <div class="cifra"><span>Marcaciones guardadas</span><strong>{{ "{:,}".format(d.marcaciones).replace(",", ".") }}</strong><small>en el historial</small></div>
+    <div class="cifra"><span>Incidencias detectadas</span><strong>{{ d.incidencias }}</strong><small>duplicados, incompletos e inconsistencias</small></div>
+    <div class="cifra"><span>Última carga</span><strong style="font-size:18px">{{ d.ultima_carga.fecha_hora|fechahora if d.ultima_carga else '—' }}</strong><small>{{ d.ultima_carga.nombre_archivo if d.ultima_carga else 'sin cargas' }}</small></div>
+</section>
+
+<div class="rejilla-2">
+    <section class="panel">
+        <h2>Marcaciones por día</h2>
+        <p class="nota">Últimos {{ d.por_dia|length }} días con datos. La barra verde es el día más reciente.</p>
+        {% if d.por_dia %}
+            {% set maximo = d.por_dia|map(attribute='total')|max %}
+            <div class="barras">
+                {% for dia in d.por_dia %}
+                <div class="barra" title="{{ dia.total }} marcaciones de {{ dia.personas }} personas">
+                    <b>{{ dia.total }}</b>
+                    <i style="height: {{ (dia.total * 120 / maximo)|round|int }}px"></i>
+                    <small>{{ dia.fecha[8:10] }}/{{ dia.fecha[5:7] }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="vacio"><strong>Sin datos todavía</strong>Cuando cargues un reporte, aquí verás cuántas marcaciones hubo cada día.</div>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <h2>Resumen del {{ d.ultima_fecha|fecha if d.ultima_fecha else 'día' }}</h2>
+        <p class="nota">Según la hora de entrada de referencia ({{ config.HORA_ENTRADA_DEFECTO }}).</p>
+        {% if d.resumen %}
+        <div class="resumen-dia">
+            <div style="background:var(--verde-tinte)"><span>Asistieron</span><strong>{{ d.resumen.presentes }}</strong></div>
+            <div style="background:var(--amarillo-tinte)"><span>Con atraso</span><strong>{{ d.resumen.atrasos }}</strong></div>
+            <div style="background:var(--rojo-tinte)"><span>Sin marcación</span><strong>{{ d.resumen.ausentes }}</strong></div>
+            <div style="background:var(--azul-tinte)"><span>Por revisar</span><strong>{{ d.resumen.observados }}</strong></div>
+        </div>
+        {% if session.id_rol in (1, 2) %}
+        <p style="margin:16px 0 0"><a class="boton secundario" href="{{ url_for('informes.parte_diario', fecha=d.ultima_fecha) }}">Ver parte diario completo</a></p>
+        {% endif %}
+        {% else %}
+            <div class="vacio"><strong>Sin resumen</strong>No hay marcaciones para resumir.</div>
+        {% endif %}
+    </section>
+</div>
+
+<section class="panel accesos">
+    <h2>Accesos rápidos</h2>
+    <div class="accesos-lista">
+    {% for seccion, items in menu %}{% for item in items if not item.sprint and item.endpoint != 'panel.inicio' %}
+        <a href="{{ item.url }}">{{ icono(item.icono) }} <span>{{ item.texto }}</span></a>
+    {% endfor %}{% endfor %}
+    </div>
+</section>
+{% endblock %}
